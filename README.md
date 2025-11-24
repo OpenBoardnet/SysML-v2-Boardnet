@@ -2,10 +2,16 @@
 # The "OpenBoardNet" as a SysML v2 library 
 
 This is the "OpenBardnet" as a SysML v2 library for modeling automotive boardnet architectures. 
-It runs with the SysML v2 tool "SysMD" and makes use of its extensions for
+It runs with the SysML v2 tool "SysMD", for example. 
+The SysML v2 library provides an overall framework for creating instances of boardnet architectures.
+For this purpose, we consider the use cases
 
-- interactive modeling
-- analysis by constraint propagation
+1. ***Interactive modeling of an instance of a in-vehicle network.*** 
+For this case, the SysML v2 library provides the definitions of views, parts, requirements, etc.
+
+2. ***Analysis of instances of in-vehicle networks.***
+In this case, the library provides definitions of calculations that permit checking the consistency.
+Such calculations are done by the tool SysMD, for example.
 
 Note that it is not yet uploaded as we are doing some final quality assurance of the models. 
 
@@ -31,6 +37,7 @@ The OpenCar library is structured in the following packages:
 - [network](network.md)
 - [sensors](sensors.md)
 - [topology](topology.md)
+
 # Disclaimer
 
 The development of the tools SysMD and AGILA was and is sponsored by the German BMBF within
