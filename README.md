@@ -1,4 +1,4 @@
-![OpenCar](Files/car.png)
+![OpenCar](Files/car-small.png)
 # The "OpenBoardNet" as a SysML v2 library
 
 This is the "OpenBoardnet" as a SysML v2 library for modeling automotive boardnet architectures. It runs with the SysML v2 tool "SysMD", for example. The SysML v2 library provides an overall framework for creating instances of boardnet architectures. For this purpose, we consider the use cases:
