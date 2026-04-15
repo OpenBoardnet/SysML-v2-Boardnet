@@ -59,8 +59,7 @@ Assumed based on ISO 26262 decription: all other.
 ## Basis-Definition
 ```SysML::OpenBoardnet::Safety
 private import ISQ::*;
-private import ScalarValues::*;
-private import BaseTypes::*; 
+private import ScalarValues::*; 
 
 abstract part def SafetyCriticalItem {
     attribute assignedASIL: DimensionOneValue {:>> range = "0..4";}
@@ -76,11 +75,11 @@ calc def calcASIL {
     in attribute controllability: DimensionOneValue {:>> range="0..3";}
     
     attribute sum: DimensionOneValue = severity + exposure + controllability;
-    // CORRECTION: Comparison with 0.0 [1]
-    attribute sumAdapted: DimensionOneValue = if controllability == 0.0 [1] ? 0.0 [1] else if severity == 0.0 [1] ? 0.0 [1] else sum;
+    // CORRECTION: Comparison with 0.0 
+    attribute sumAdapted: DimensionOneValue = if controllability == 0.0  ? 0.0  else if severity == 0.0  ? 0.0  else sum;
     
-    // CORRECTION: Calculation with 6.0 [1] and 0.0 [1]
-    return result: DimensionOneValue = max(sumAdapted - 6.0 [1], 0.0 [1]);   
+    // CORRECTION: Calculation with 6.0  and 0.0 
+    return result: DimensionOneValue = max(sumAdapted - 6.0 , 0.0 );   
 }
 ```
 ## ASIL Dekomposition
@@ -90,7 +89,7 @@ calc def calculateASILDecomposition {
     in attribute part2: DimensionOneValue {:>> range="0..4";}
     in attribute isRedundant: Boolean;
     
-    attribute redundantLevel: DimensionOneValue = min(part1 + part2, 4.0 [1]);
+    attribute redundantLevel: DimensionOneValue = min(part1 + part2, 4.0 );
     attribute notredundantLevel: DimensionOneValue = min(part1, part2);
     
     return result: DimensionOneValue = if isRedundant ? redundantLevel else notredundantLevel {:>> range="0..4";} 

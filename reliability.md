@@ -15,7 +15,6 @@ Both metrics depend on their respective failure rates, as well as the total fail
 ```SysML::OpenBoardnet
 package Reliability {
     private import ISQ::*;
-    private import BaseTypes::*;
     private import ScalarValues::*;
 
     abstract part def ReliableItem {

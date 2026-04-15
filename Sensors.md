@@ -11,11 +11,10 @@ which are linked to software components like SpeedMeasureSW.
 private import Hardware::*;      
 private import ISQ::*;           
 private import Quantities::*;    
-private import ScalarValues::*; 
-private import BaseTypes::*;
+private import ScalarValues::*;
 
 part def Sensor :> Sensor_Base {
-    part measuredQuantityType: ScalarQuantityValue;
+    attribute measuredQuantityType: String;
     attribute dataLoad: StorageCapacityValue {:>> unit ="kB"; :>> range="0..100";} 
 }
 

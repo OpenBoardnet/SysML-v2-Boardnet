@@ -7,7 +7,6 @@ It sums up the base types for Sensors, Network modules, Compute Units (CUs), and
 ```SysML::OpenBoardnet
 package Hardware {
     
-    private import LocationsAndSpaces::*;
     private import ISQ::*;
     
     part def Hardware_Base {

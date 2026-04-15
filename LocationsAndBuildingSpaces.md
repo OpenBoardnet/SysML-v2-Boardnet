@@ -107,8 +107,8 @@ part def InstallationSpace {
     // Environmental conditions
     attribute temperatureRange: ThermodynamicTemperatureValue {:>> unit ="°C"; :>> range="-40 .. 150";} 
     attribute vibrations: SpeedValue {:>> unit ="mm/s"; :>> range="0 .. 100";}
-    attribute humidity: MassDensityValue {:>> unit ="g/m^3"; :>> range="0..100000";} 
-    attribute EMI: VoltageValue {:>> unit ="mV"; :>> range="0..100";}
+    attribute humidity: MassDensityValue {:>> unit ="kg/m^3"; :>> range="0..100000";} 
+    attribute EMI: ElectricPotentialDifferenceValue {:>> unit ="mV"; :>> range="0..100";}
 }
 
 part def Location {

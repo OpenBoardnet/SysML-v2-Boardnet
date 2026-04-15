@@ -7,9 +7,8 @@ It ensures semantic consistency for all attributes like length, mass, or speed t
 ```SysML::OpenBoardnet
 package BaseTypes {  
 
-    private import Reliability::*;
-    private import Safety::*;
-    
+    private import ISQ::*;
+    private import ScalarValues::*;
     
     // An abstract 'Feature' that other features will specialize.
     abstract part def Feature;
@@ -19,7 +18,48 @@ package BaseTypes {
     
     // An abstract 'Function' for system functions.
     abstract part def Function;
-    
-    
+
+    // Precision Types - Centralized precision definitions for all layers
+    package PrecisionTypes {
+        abstract part def Precision {
+            attribute size: StorageCapacityValue {:>> unit = "kB";}
+            attribute name: String;
+        }
+        
+        part def Float64 :> Precision {
+            attribute :>> size = 0.0078125 [kB];
+            attribute :>> name = "Float64";
+        }
+        
+        part def Float32 :> Precision {
+            attribute :>> size = 0.00390625 [kB];
+            attribute :>> name = "Float32";
+        }
+        
+        part def Float16 :> Precision {
+            attribute :>> size = 0.001953125 [kB];
+            attribute :>> name = "Float16";
+        }
+        
+        part def Int32 :> Precision {
+            attribute :>> size = 0.00390625 [kB];
+            attribute :>> name = "Int32";
+        }
+        
+        part def Int16 :> Precision {
+            attribute :>> size = 0.001953125 [kB];
+            attribute :>> name = "Int16";
+        }
+        
+        part def Int8 :> Precision {
+            attribute :>> size = 0.0009765625 [kB];
+            attribute :>> name = "Int8";
+        }
+        
+        part def Boolean :> Precision {
+            attribute :>> size = 0.0009765625 [kB];
+            attribute :>> name = "Boolean";
+        }
+    }
 }
 ```

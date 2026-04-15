@@ -17,7 +17,6 @@ private import Features::*;
 private import Functions::*;
 private import Requirements::*;
 private import ISQ::*;
-private import BaseTypes::*;
 private import ScalarValues::*;
 
 abstract part def VehicleZone {

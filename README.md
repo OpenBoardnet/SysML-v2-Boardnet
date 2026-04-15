@@ -5,7 +5,6 @@ This is the "OpenBoardnet" as a SysML v2 library for modeling automotive boardne
 
 - **Interactive modeling of an instance of a in-vehicle network.** For this case, the SysML v2 library provides the definitions of views, parts, requirements, etc.
 - **Analysis of instances of in-vehicle networks.** In this case, the library provides definitions of calculations that permit checking the consistency. Such calculations are done by the tool SysMD, for example.
-
 # Objective
 
 The objective is to permit a very early analysis of performance indicators for board net architectures and its components. For this purpose, the OpenCar uses parameterized models and constraint propagation techniques.

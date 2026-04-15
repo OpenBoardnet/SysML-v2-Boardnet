@@ -40,8 +40,8 @@ package Features {
 # Functions
 ```SysML::OpenBoardnet
 package Functions {
-    private import BaseTypes::*; 
     private import ISQ::*;
+    private import BaseTypes::*;
 
     part def SpeedAcquisition :> Function {
         out attribute vehicleSpeed: SpeedValue {:>> unit = "km/h"; :>> range = "-20..200";}
