@@ -27,37 +27,37 @@ package BaseTypes {
         }
         
         part def Float64 :> Precision {
-            attribute :>> size = 0.0078125 [kB];
+            attribute :>> size = 8.0 [B];
             attribute :>> name = "Float64";
         }
         
         part def Float32 :> Precision {
-            attribute :>> size = 0.00390625 [kB];
+            attribute :>> size = 4.0 [B];
             attribute :>> name = "Float32";
         }
         
         part def Float16 :> Precision {
-            attribute :>> size = 0.001953125 [kB];
+            attribute :>> size = 2.0 [B];
             attribute :>> name = "Float16";
         }
         
         part def Int32 :> Precision {
-            attribute :>> size = 0.00390625 [kB];
+            attribute :>> size = 4.0 [B];
             attribute :>> name = "Int32";
         }
         
         part def Int16 :> Precision {
-            attribute :>> size = 0.001953125 [kB];
+            attribute :>> size = 2.0 [B];
             attribute :>> name = "Int16";
         }
         
         part def Int8 :> Precision {
-            attribute :>> size = 0.0009765625 [kB];
+            attribute :>> size = 1.0 [B];
             attribute :>> name = "Int8";
         }
         
         part def Boolean :> Precision {
-            attribute :>> size = 0.0009765625 [kB];
+            attribute :>> size = 1.0 [B];
             attribute :>> name = "Boolean";
         }
     }

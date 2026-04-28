@@ -54,7 +54,7 @@ part radarAndLidarController: ControlUnit;
 part zonalControllerRear: ControlUnit;
 
 part def testCPU :> ControlUnit {
-    :>> fclk {::> range ="1..100"; ::> unit ="MHz";} 
+    :>> fclk {:>> range ="1..100"; :>> unit ="MHz";} 
     :>> opsPerInstruction = 4;
     :>> ipc = 2;         
     part runningModel: LeNeT5;
@@ -63,6 +63,21 @@ part def testCPU :> ControlUnit {
     attribute maximumExecutionTime: DurationValue = 2.0 [ms];
     assert constraint {executionTimeLeNet5 <= maximumExecutionTime}
 } 
+part def ADASController :> ControlUnit {
+    attribute :>> fclk = 100.0 [MHz];
+    :>> opsPerInstruction = 4;
+    :>> ipc = 2;     
+    part runningModel : Yolov5n;
+    attribute executionTime : DurationValue = ToReal(runningModel::totalFLOPs) / FLOPs {:>> unit = "ms";}
+
+    // ADAS Hard-Deadline (ISO 26262 ASIL-B konform)
+    attribute maxLatency : DurationValue = 33.0[ms]; // 30 fps
+    //assert constraint { executionTime <= maxLatency }
+
+    // Speicher-Constraint (z.B. 2 MB SRAM-Limit)
+    attribute maxMemory : StorageCapacityValue = 2.0[MB];
+    assert constraint { runningModel::totalMemory <= maxMemory }
+}
 ```
 # Neural Network Model
 ## Neural Network Layer Base
@@ -86,10 +101,10 @@ part def DenseLayer :> NeuralNetworkLayer {
     attribute outputNeurons: Integer;
         
     // FLOPS calculation
-    attribute :>> FLOPs = 2 * inputNeurons * outputNeurons;
+    :>> FLOPs = 2 * inputNeurons * outputNeurons;
 
     // Memory calculation
-    attribute :>> Memory = ToReal(inputNeurons * outputNeurons + outputNeurons) * precision::size {:>> unit = "kB";}
+    :>> Memory = ToReal(inputNeurons * outputNeurons + outputNeurons) * precision::size {:>> unit = "kB";}
 }
 ```
 ### Convolution Layer
@@ -102,13 +117,11 @@ part def ConvLayer :> NeuralNetworkLayer {
     attribute numChannels: Integer;
     attribute stride: Integer;
     attribute padding: Integer;   
-    // Output shape calculation
-    attribute outputHeight: Integer = (inputHeight - kernelSize + 2 * padding) / stride + 1;
-    attribute outputWidth: Integer = (inputWidth - kernelSize + 2 * padding) / stride + 1;
-    // FLOPS calculation
-    attribute :>> FLOPs = 2 * kernelSize^2 * numChannels * numFilters * outputHeight * outputWidth;  
-    // Memory calculation
-    attribute :>> Memory = ToReal(kernelSize^2 * numChannels * numFilters + numFilters) * precision::size {:>> unit = "kB";}
+    attribute outputHeight: Integer = floor((inputHeight - kernelSize + 2 * padding) / stride) + 1;
+    attribute outputWidth: Integer = floor((inputWidth - kernelSize + 2 * padding) / stride) + 1;
+    
+    :>> FLOPs = 2 * kernelSize^2 * numChannels * numFilters * outputHeight * outputWidth;  
+    :>> Memory = ToReal(kernelSize^2 * numChannels * numFilters + numFilters) * precision::size {:>> unit = "kB";}
 }
 ```
 ### Pooling Layer
@@ -119,11 +132,9 @@ part def PoolingLayer :> NeuralNetworkLayer {
     attribute inputWidth: Integer;
     attribute numChannels: Integer;
         
-    // FLOPS calculation
-    attribute :>> FLOPs = (kernelSize^2 - 1) * inputHeight * inputWidth * numChannels;
-
+    :>> FLOPs = (kernelSize^2 - 1) * inputHeight * inputWidth * numChannels;
     // Memory requirement is negligible
-    attribute :>> Memory = 0.0 [B];
+    :>> Memory = 0.0 [B];
 }
 ```
 ## Batch Normalization Layer
@@ -131,11 +142,19 @@ part def PoolingLayer :> NeuralNetworkLayer {
 part def BatchNormLayer :> NeuralNetworkLayer {
     attribute numNeurons: Integer;
         
-    // FLOPS calculation
-    attribute :>> FLOPs = 2 * numNeurons;
+    :>> FLOPs = 2 * numNeurons;
+    :>> Memory = ToReal(4 * numNeurons) * precision::size {:>> unit = "kB";}
+}
+```
+## SiLu Layer
+```SysML::OpenBoardnet::NeuralNetworkModel
+part def SiLULayer :> NeuralNetworkLayer {
+    attribute numChannels : Integer;
+    attribute inputHeight : Integer;
+    attribute inputWidth  : Integer;
 
-    // Memory calculation
-    attribute :>> Memory = ToReal(4 * numNeurons) * precision::size {:>> unit = "kB";}
+    :>> FLOPs  = 4 * numChannels * inputHeight * inputWidth;
+    :>> Memory = 0.0[B];
 }
 ```
 ## LeNeT5 Architecture
@@ -143,52 +162,52 @@ part def BatchNormLayer :> NeuralNetworkLayer {
 // Define a Neural Network with example layers
 part def LeNeT5 {
     part layer1 : ConvLayer {
-        attribute :>> kernelSize : ScalarValues::Integer = 5;
-        attribute :>> numFilters : ScalarValues::Integer = 6;
-        attribute :>> inputHeight  = 32;
-        attribute :>> inputWidth  = 32;
-        attribute :>> numChannels  = 1;
-        attribute :>> stride  = 1;
-        attribute :>> padding  = 0;
-        part precision : BaseTypes::PrecisionTypes::Float16;
+        :>> kernelSize = 5;
+        :>> numFilters = 6;
+        :>> inputHeight = 32;
+        :>> inputWidth = 32;
+        :>> numChannels = 1;
+        :>> stride = 1;
+        :>> padding = 0;
+        part precision: BaseTypes::PrecisionTypes::Float16;
     }
     part layer2 : PoolingLayer {
-        attribute :>> kernelSize = 2;
-        attribute :>> inputHeight  = 28;
-        attribute :>> inputWidth  = 28;
-        attribute :>> numChannels  = 6;
+        :>> kernelSize = 2;
+        :>> inputHeight = 28;
+        :>> inputWidth = 28;
+        :>> numChannels = 6;
     }
     part layer3 : ConvLayer {
-        attribute :>> kernelSize = 5;
-        :>> numFilters : ScalarValues::Integer = 16;
-        attribute :>> inputHeight  = 14;
-        attribute :>> inputWidth  = 14;
-        attribute :>> numChannels  = 6;
-        attribute :>> stride  = 1;
-        attribute :>> padding  = 0;
-        part precision : BaseTypes::PrecisionTypes::Float16;
+        :>> kernelSize = 5;
+        :>> numFilters = 16;
+        :>> inputHeight = 14;
+        :>> inputWidth = 14;
+        :>> numChannels = 6;
+        :>> stride = 1;
+        :>> padding = 0;
+        part precision: BaseTypes::PrecisionTypes::Float16;
     }
     part layer4 : PoolingLayer {
-        attribute :>> kernelSize = 2;
-        attribute :>> inputHeight  = 10;
-        attribute :>> inputWidth  = 10;
-        attribute :>> numChannels  = 16;
+        :>> kernelSize = 2;
+        :>> inputHeight = 10;
+        :>> inputWidth = 10;
+        :>> numChannels = 16;
     }
     part layer5 : DenseLayer {
-        attribute :>> inputNeurons  = 400;
-        attribute :>> outputNeurons  = 120;
-        part precision : BaseTypes::PrecisionTypes::Float16;
+        :>> inputNeurons = 400;
+        :>> outputNeurons = 120;
+        part precision: BaseTypes::PrecisionTypes::Float16;
     }
     part layer6 : DenseLayer {
-        attribute :>> inputNeurons  = 120;
-        attribute :>> outputNeurons  = 84;
-        part precision : BaseTypes::PrecisionTypes::Float16;
+        :>> inputNeurons = 120;
+        :>> outputNeurons = 84;
+        part precision: BaseTypes::PrecisionTypes::Float16;
     }
 
     part layer7 : DenseLayer {
-        attribute :>> inputNeurons  = 84;
-        attribute :>> outputNeurons  = 10;
-        part precision : BaseTypes::PrecisionTypes::Float16;
+        :>> inputNeurons = 84;
+        :>> outputNeurons = 10;
+        part precision: BaseTypes::PrecisionTypes::Float16;
     }
 
     // Compute total FLOPS and memory for the entire network
