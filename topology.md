@@ -46,9 +46,9 @@ package Topology {
     private import Network::*; 
 
     connection def PhysicalPath {
-        end source: Location;
-        end target: Location;
-        attribute pathLength: LengthValue = cityBlockDistance(source::position,target::position) * 1.4;
+        end sourceLocation: Location;
+        end targetLocation: Location;
+        attribute pathLength: LengthValue = cityBlockDistance(sourceLocation::position,targetLocation::position) * 1.4;
     }
 
     part def VehicleTopology {

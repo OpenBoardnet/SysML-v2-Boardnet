@@ -27,7 +27,7 @@ package Requirements {
         attribute totalLength: LengthValue {:>> unit = "m";}
         attribute totalWeight: MassValue {:>> unit = "kg";}
         attribute totalLengthofCable: LengthValue {:>> unit = "m";}
-        attribute totalCosts: Real; // Correct syntax (with semicolon)
+        attribute totalCosts: AmountOfMoneyValue; 
     }
 
     requirement def VehicleWeightRequirement {
@@ -44,8 +44,7 @@ package Requirements {
     
     requirement def VehicleCostRequirement {
         subject v: Vehicle;
-        // Corrected type for 'range' (not 'Real')
-        attribute maxCost: DimensionOneValue {:>> range = "10000..100000";}
+        attribute maxCost: AmountOfMoneyValue {:>> unit = "EUR"; :>> range = "10000..100000";}
         constraint { v::totalCosts <= maxCost }
     }
     

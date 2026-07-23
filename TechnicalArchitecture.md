@@ -24,9 +24,9 @@ part def BaseArchitectureRealization {
     part loc_Rear : LocationsAndSpaces::rearAxle;
         
     // Analysis 
-    attribute totalLengthValue: LengthValue = bySpecializations(totalLengthValue) {:>> range= "0..1000" ;:>> unit ="m";} 
+    attribute totalLength: LengthValue = bySpecializations(totalLength) {:>> range= "0..1000" ;:>> unit ="m";} 
     attribute totalWeight: MassValue = bySpecializations(totalWeight);// {:>> range = "0..1000";:>> unit ="g";}
-    attribute totalCosts:  AmountOfMoneyValue = bySpecializations(totalCosts) {:>> range= "0..1000" ;:>> unit ="EUR";} 
+    attribute totalCosts:  AmountOfMoneyValue = bySpecializations(totalCosts) {:>> range= "0..20" ;:>> unit ="EUR";} 
 }
 ```
 # Zonal Architecture
@@ -37,7 +37,7 @@ physical zones (Front, Rear) with local aggregation of sensor data.
 ![img](Files/ZonalArchCar.png){width=800 height=300}
 ```SysML::OpenBoardnet::TechnicalArchitecture
 part def ZonalArchitectureRealization :> BaseArchitectureRealization {
-    attribute :>> totalLengthValue = sumOverParts(pathLength); 
+    attribute :>> totalLength = sumOverParts(pathLength); 
     attribute :>> totalWeight = sumOverParts(wireType::specificWeight * pathLength);
     attribute :>> totalCosts = sumOverParts(wireType::costsPerMeter * pathLength);
     
@@ -46,7 +46,7 @@ part def ZonalArchitectureRealization :> BaseArchitectureRealization {
         part target :> CU::zonalControllerFront;
         part sourceLocation :> LocationsAndSpaces::frontCameraLoc;
         part targetLocation :> LocationsAndSpaces::zonalControllerFrontLoc;
-        part wireType : Network::Eth100BaseT1;
+        part wireType : Network::Eth1000BaseT1;
     }
     part wireTopViewFront : Wire {
         part source :> Sensors::topViewFront;
@@ -74,7 +74,7 @@ part def ZonalArchitectureRealization :> BaseArchitectureRealization {
         part target :> CU::zonalControllerFront;
         part sourceLocation :> LocationsAndSpaces::roofCameraLoc;
         part targetLocation :> LocationsAndSpaces::zonalControllerFrontLoc;
-        part wireType : Network::Eth100BaseT1;
+        part wireType : Network::Eth1000BaseT1;
     }
     part wireLongRangeRadar : Wire {
         part source :> Sensors::longRangeRadar;
@@ -90,12 +90,12 @@ part def ZonalArchitectureRealization :> BaseArchitectureRealization {
         part targetLocation :> LocationsAndSpaces::zonalControllerFrontLoc;
         part wireType : Network::CANFD;
     }
-    part wireLidar : Wire {
+    part wireLidar : Wire [0..1] {
         part source :> Sensors::lidar;
         part target :> CU::zonalControllerFront;
         part sourceLocation :> LocationsAndSpaces::lidarLoc;
         part targetLocation :> LocationsAndSpaces::zonalControllerFrontLoc;
-        part wireType : Network::Ethernet;
+        part wireType : Network::Eth100BaseT1;
     }
     part wireUltrasonicFront : Wire {
         part source :> Sensors::ultrasonicsensorFront;
@@ -142,7 +142,7 @@ shows only a 2D projection.
 ![img](Files/DomainArchCar.png){width=800 height=300}
 ```SysML::OpenBoardnet::TechnicalArchitecture
 part def DomainArchitectureRealization :> BaseArchitectureRealization {
-    attribute :>> totalLengthValue = sumOverParts(pathLength);
+    attribute :>> totalLength = sumOverParts(pathLength);
     attribute :>> totalWeight = sumOverParts(wireType::specificWeight * pathLength);
     attribute :>> totalCosts = sumOverParts(wireType::costsPerMeter * pathLength);
     
@@ -151,7 +151,7 @@ part def DomainArchitectureRealization :> BaseArchitectureRealization {
         part target :> CU::cameraController;
         part sourceLocation :> LocationsAndSpaces::frontCameraLoc;
         part targetLocation :> LocationsAndSpaces::cameraControllerLoc;
-        part wireType : Network::Eth100BaseT1;
+        part wireType : Network::Eth1000BaseT1;
     }
     part wireTopViewFrontDomain : Wire {
         part source :> Sensors::topViewFront;
@@ -207,7 +207,7 @@ part def DomainArchitectureRealization :> BaseArchitectureRealization {
         part target :> CU::radarAndLidarController;
         part sourceLocation :> LocationsAndSpaces::lidarLoc;
         part targetLocation :> LocationsAndSpaces::radarAndLidarControllerLoc;
-        part wireType : Network::Ethernet;
+        part wireType : Network::Eth100BaseT1;
     }
     part wireUltrasonicFrontDomain : Wire {
         part source :> Sensors::ultrasonicsensorFront;
@@ -235,14 +235,14 @@ part def DomainArchitectureRealization :> BaseArchitectureRealization {
         part target :> CU::gateway;
         part sourceLocation :> LocationsAndSpaces::radarAndLidarControllerLoc;
         part targetLocation :> LocationsAndSpaces::gatewayLoc;
-        part wireType : Network::CANFD;
+        part wireType : Network::Eth1000BaseT1;
     }
     part wireUltrasonicToGateway : Wire {
         part source: CU::ultrasonicController;
         part target :> CU::gateway;
         part sourceLocation :> LocationsAndSpaces::ultrasonicControllerLoc;
         part targetLocation :> LocationsAndSpaces::gatewayLoc;
-        part wireType : Network::CAN;
+        part wireType : Network::Eth1000BaseT1;
     }
 }
 ```

@@ -40,9 +40,8 @@ part def ControlUnit :> ControlUnit_Base{
     attribute controllability: DimensionOneValue = 3.0;
     attribute asilLevel: DimensionOneValue = Safety::calcASIL(severity, exposure, controllability);
     attribute fclk: FrequencyValue {:>> unit= "MHz"; :>> range= "0.1 .. 10000";} 
-    attribute ipc:  IntegerInRange {:>> range default= "1..10000";}
-    attribute opsPerInstruction: IntegerInRange {:>> range = "1..10000";}
-    attribute FLOPS: FrequencyValue =  fclk * ToReal(opsPerInstruction) * ToReal(ipc) ;
+    attribute opsPerCyle:  IntegerInRange {:>> range default= "1..10000";}
+    attribute FLOPS_Hardware: FrequencyValue =  fclk * ToReal(opsPerCyle)  {:>> unit= "GFLOPS";} 
 }
 
 part zonalControllerFront: ControlUnit;
@@ -53,165 +52,49 @@ part ultrasonicController: ControlUnit;
 part radarAndLidarController: ControlUnit;
 part zonalControllerRear: ControlUnit;
 
-part def testCPU :> ControlUnit {
-    :>> fclk {:>> range ="1..100"; :>> unit ="MHz";} 
-    :>> opsPerInstruction = 4;
-    :>> ipc = 2;         
-    part runningModel: LeNeT5;
-    attribute FLOPsLeNeT5: Integer = runningModel::totalFLOPs;
-    attribute executionTimeLeNet5: DurationValue = ToReal(FLOPsLeNeT5) / FLOPS {:>> unit = "ms";}
-    attribute maximumExecutionTime: DurationValue = 2.0 [ms];
-    assert constraint {executionTimeLeNet5 <= maximumExecutionTime}
-} 
-part def ADASController :> ControlUnit {
-    attribute :>> fclk = 100.0 [MHz];
-    :>> opsPerInstruction = 4;
-    :>> ipc = 2;     
+
+part def ADASController :> ControlUnit { //ARM Cortex-m7
+    attribute :>> fclk = 480.0 [MHz];
+    :>> opsPerCyle = 2;
     part runningModel : Yolov5n;
-    attribute executionTime : DurationValue = ToReal(runningModel::totalFLOPs) / FLOPs {:>> unit = "ms";}
+    attribute T : DurationValue = runningModel::FLOPsTotal / FLOPS_Hardware;
 
     // ADAS Hard-Deadline (ISO 26262 ASIL-B konform)
-    attribute maxLatency : DurationValue = 33.0[ms]; // 30 fps
-    //assert constraint { executionTime <= maxLatency }
+    attribute R : DurationValue = 33.0[ms]; // 30 fps, R = maxLatency
+    //assert constraint { R <= T }
+
+    // Speicher-Constraint (2 MB SRAM-Limit)
+    attribute MemoryHardware : StorageCapacityValue = 2.0[MB];
+    //assert constraint { runningModel::MemoryTotal <= MemoryHardware }
+}
+
+part def test :> ControlUnit { //ARM Cortex-m7
+    attribute :>> fclk {:>> unit ="GHz"; :>>range="0.1..10";}
+    :>> opsPerCyle = 2; //4 cores with 32 Ops per cylce
+    part runningModel : Yolov5n;
+    attribute T : DurationValue = runningModel::FLOPsTotal / FLOPS_Hardware {:>> unit = "ms";}
+
+    // ADAS Hard-Deadline (ISO 26262 ASIL-B konform)
+    attribute R : DurationValue = 33.0[ms]; // 30 fps, R = maxLatency
+    //assert constraint { R >= T }
 
     // Speicher-Constraint (z.B. 2 MB SRAM-Limit)
-    attribute maxMemory : StorageCapacityValue = 2.0[MB];
-    assert constraint { runningModel::totalMemory <= maxMemory }
+    attribute MemoryHardware : StorageCapacityValue = 2.0[MB];
+    //assert constraint { runningModel::MemoryTotal <= MemoryHardware }
 }
-```
-# Neural Network Model
-## Neural Network Layer Base
-```SysML::OpenBoardnet
-package NeuralNetworkModel {
-    private import BaseTypes::*;
-    
-    // Abstract base type for all layers
-    part def NeuralNetworkLayer {
-        attribute FLOPs: Integer;
-        attribute Memory: StorageCapacityValue;
-        part precision: PrecisionTypes::Precision;
-    }
-}
-```
-## Layer Definitions
-### Dense Layer
-```SysML::OpenBoardnet::NeuralNetworkModel
-part def DenseLayer :> NeuralNetworkLayer {
-    attribute inputNeurons: Integer;
-    attribute outputNeurons: Integer;
-        
-    // FLOPS calculation
-    :>> FLOPs = 2 * inputNeurons * outputNeurons;
 
-    // Memory calculation
-    :>> Memory = ToReal(inputNeurons * outputNeurons + outputNeurons) * precision::size {:>> unit = "kB";}
-}
-```
-### Convolution Layer
-```SysML::OpenBoardnet::NeuralNetworkModel
-part def ConvLayer :> NeuralNetworkLayer {
-    attribute kernelSize: Integer;
-    attribute numFilters: Integer;
-    attribute inputHeight: Integer;
-    attribute inputWidth: Integer;
-    attribute numChannels: Integer;
-    attribute stride: Integer;
-    attribute padding: Integer;   
-    attribute outputHeight: Integer = floor((inputHeight - kernelSize + 2 * padding) / stride) + 1;
-    attribute outputWidth: Integer = floor((inputWidth - kernelSize + 2 * padding) / stride) + 1;
-    
-    :>> FLOPs = 2 * kernelSize^2 * numChannels * numFilters * outputHeight * outputWidth;  
-    :>> Memory = ToReal(kernelSize^2 * numChannels * numFilters + numFilters) * precision::size {:>> unit = "kB";}
-}
-```
-### Pooling Layer
-```SysML::OpenBoardnet::NeuralNetworkModel
-part def PoolingLayer :> NeuralNetworkLayer {
-    attribute kernelSize: Integer;
-    attribute inputHeight: Integer;
-    attribute inputWidth: Integer;
-    attribute numChannels: Integer;
-        
-    :>> FLOPs = (kernelSize^2 - 1) * inputHeight * inputWidth * numChannels;
-    // Memory requirement is negligible
-    :>> Memory = 0.0 [B];
-}
-```
-## Batch Normalization Layer
-```SysML::OpenBoardnet::NeuralNetworkModel
-part def BatchNormLayer :> NeuralNetworkLayer {
-    attribute numNeurons: Integer;
-        
-    :>> FLOPs = 2 * numNeurons;
-    :>> Memory = ToReal(4 * numNeurons) * precision::size {:>> unit = "kB";}
-}
-```
-## SiLu Layer
-```SysML::OpenBoardnet::NeuralNetworkModel
-part def SiLULayer :> NeuralNetworkLayer {
-    attribute numChannels : Integer;
-    attribute inputHeight : Integer;
-    attribute inputWidth  : Integer;
+part def macbookM4 :> ControlUnit { //ARM Cortex-m7
+    attribute :>> fclk = 4.4 [GHz];
+    :>> opsPerCyle = 4*32; //4 cores with 32 Ops per cylce
+    part runningModel : Yolov5n;
+    attribute T : DurationValue = runningModel::FLOPsTotal / FLOPS_Hardware {:>> unit = "ms";}
 
-    :>> FLOPs  = 4 * numChannels * inputHeight * inputWidth;
-    :>> Memory = 0.0[B];
-}
-```
-## LeNeT5 Architecture
-```SysML::OpenBoardnet::NeuralNetworkModel
-// Define a Neural Network with example layers
-part def LeNeT5 {
-    part layer1 : ConvLayer {
-        :>> kernelSize = 5;
-        :>> numFilters = 6;
-        :>> inputHeight = 32;
-        :>> inputWidth = 32;
-        :>> numChannels = 1;
-        :>> stride = 1;
-        :>> padding = 0;
-        part precision: BaseTypes::PrecisionTypes::Float16;
-    }
-    part layer2 : PoolingLayer {
-        :>> kernelSize = 2;
-        :>> inputHeight = 28;
-        :>> inputWidth = 28;
-        :>> numChannels = 6;
-    }
-    part layer3 : ConvLayer {
-        :>> kernelSize = 5;
-        :>> numFilters = 16;
-        :>> inputHeight = 14;
-        :>> inputWidth = 14;
-        :>> numChannels = 6;
-        :>> stride = 1;
-        :>> padding = 0;
-        part precision: BaseTypes::PrecisionTypes::Float16;
-    }
-    part layer4 : PoolingLayer {
-        :>> kernelSize = 2;
-        :>> inputHeight = 10;
-        :>> inputWidth = 10;
-        :>> numChannels = 16;
-    }
-    part layer5 : DenseLayer {
-        :>> inputNeurons = 400;
-        :>> outputNeurons = 120;
-        part precision: BaseTypes::PrecisionTypes::Float16;
-    }
-    part layer6 : DenseLayer {
-        :>> inputNeurons = 120;
-        :>> outputNeurons = 84;
-        part precision: BaseTypes::PrecisionTypes::Float16;
-    }
+    // ADAS Hard-Deadline (ISO 26262 ASIL-B konform)
+    attribute R : DurationValue = 33.0[ms]; // 30 fps, R = maxLatency
+    //assert constraint { R <= T }
 
-    part layer7 : DenseLayer {
-        :>> inputNeurons = 84;
-        :>> outputNeurons = 10;
-        part precision: BaseTypes::PrecisionTypes::Float16;
-    }
-
-    // Compute total FLOPS and memory for the entire network
-    attribute totalFLOPs : ScalarValues::Integer = sumOverParts(FLOPs);
-    attribute totalMemory : StorageCapacityValue = sumOverParts(Memory) {:>> unit = "kB";}
+    // Speicher-Constraint (z.B. 2 MB SRAM-Limit)
+    attribute MemoryHardware : StorageCapacityValue = 2.0[MB];
+    //assert constraint { runningModel::MemoryTotal <= MemoryHardware }
 }
 ```

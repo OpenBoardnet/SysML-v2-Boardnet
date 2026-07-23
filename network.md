@@ -35,6 +35,7 @@ We model the following buses and wires:
 package Network {
     private import LocationsAndSpaces::*;
     private import Hardware::*;
+    private import Topology::*;
     // Base class for all wires
     part def WireType {
         attribute specificWeight: ScalarQuantityValue {:>> unit default = "g/m"; :>> range default = "1..100";}
@@ -61,7 +62,7 @@ We use the following source:
 ```SysML::OpenBoardnet::Network
     part def Ethernet :> WireType {
         attribute :>> specificWeight {:>> unit ="g/m"; :>> range default = "3..40";}
-        attribute :>> costsPerMeter {:>> unit = "EUR/m"; :>> range default = "0.02..0.3";} 
+        attribute :>> costsPerMeter {:>> unit = "EUR/m"; :>> range default = "0.02..1.0";} 
         attribute :>> transmissionRate {:>> unit = "Mbit/s"; :>> range default = "0.1..10000";}
         attribute :>> dataPerFrame {:>> unit = "B"; :>> range default = "46..1500";}
         attribute :>> overheadPerFrame {:>> unit = "B"; :>> range default = "30..30";} 
@@ -76,13 +77,13 @@ part def Eth10BaseT1 :> Ethernet {
 
 part def Eth100BaseT1 :> Ethernet {
     attribute :>> specificWeight = 26.0 [g/m] {:>> unit = "g/m";}  
-    attribute :>> costsPerMeter = 0.3 [EUR/m] {:>> unit = "EUR/m";}  
+    attribute :>> costsPerMeter {:>> unit = "EUR/m";:>> range = "0.3..1.0";}  
     attribute :>> transmissionRate {:>> unit = "Mbit/s"; :>> range = "1..100";}
 }
 
 part def Eth1000BaseT1 :> Ethernet {
     attribute :>> specificWeight = 26.0 [g/m] {:>> unit = "g/m";}  
-    attribute :>> costsPerMeter = 0.3 [EUR/m] {:>> unit = "EUR/m";}  
+    attribute :>> costsPerMeter = 0.3 [EUR/m] {:>> unit = "EUR/m";} 
     attribute :>> transmissionRate {:>> unit = "Mbit/s"; :>> range = "1..1000";} 
 }
 
@@ -183,12 +184,10 @@ Classical CAN and CAN FD communication can also be carried out by CAN XL protoco
 ```
 # Wire Definition
 ```SysML::OpenBoardnet::Network
-    part def Wire {
+    part def Wire :> PhysicalPath {
         part source: Hardware_Base;
         part target: Hardware_Base;
-        part sourceLocation : Location;
-        part targetLocation : Location;
-        attribute pathLength: LengthValue = cityBlockDistance(sourceLocation::position, targetLocation::position) * 1.4;
+        part wireType : WireType;
         attribute resistance: ResistanceValue {:>> unit = "Ohm";}
     }
 ```

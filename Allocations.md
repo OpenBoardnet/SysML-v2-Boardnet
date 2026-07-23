@@ -21,31 +21,59 @@ and verifying that system requirements are satisfied by the combined architectur
     part domainLogic : DomainArchitecture;
     part req_Speed : SpeedAccuracyRequirement;
     part req_Brake : EmergencyBrakeAssistRequirement;
+
+    // Zonal Software Instances
+    part zonal_acc_sw : Software::SpeedControlSW;
+    part zonal_obstacle_sw : Software::ObstacleAvoidanceSW;
+    part zonal_laneKeep_sw : Software::NeuralNetworkInferenceSW;
+    part zonal_park_sw : Software::ObstacleAvoidanceSW;
+
+    // Domain Software Instances
+    part domain_acc_sw : Software::SpeedControlSW;
+    part domain_obstacle_sw : Software::ObstacleAvoidanceSW;
+    part domain_laneKeep_sw : Software::NeuralNetworkInferenceSW;
+    part domain_park_sw : Software::ObstacleAvoidanceSW;
 ```
-# Requirement -> Feature Allocations
+# Requirement -> Feature Allocations (satisfiedBy)
 ## Zonal Architecture Requirements
 ```SysML::OpenBoardnet::Allocations
-    allocation alloc_sat_1 allocate req_Speed to zonalLogic.centralFeatures.laneKeep; 
+    allocation alloc_sat_1 allocate req_Speed to zonalLogic.frontZoneFeatures.acc; 
     allocation alloc_sat_2 allocate req_Brake to zonalLogic.frontZoneFeatures.obstacleDet;
 ```
 ## Domain Architecture Requirements
 ```SysML::OpenBoardnet::Allocations
-    allocation alloc_sat_3 allocate req_Speed to domainLogic.visionDomain.laneKeep;
+    allocation alloc_sat_3 allocate req_Speed to domainLogic.radarDomain.acc;
     allocation alloc_sat_4 allocate req_Brake to domainLogic.radarDomain.obstacleDet;
 ```
-# Software -> Controller Allocations
+# Feature -> Software Component Allocations (implementedBy)
+## Zonal Feature -> Zonal Software
+```SysML::OpenBoardnet::Allocations
+    allocation alloc_zonal_impl_1 allocate zonalLogic.frontZoneFeatures.acc to zonal_acc_sw;
+    allocation alloc_zonal_impl_2 allocate zonalLogic.frontZoneFeatures.obstacleDet to zonal_obstacle_sw;
+    allocation alloc_zonal_impl_3 allocate zonalLogic.centralFeatures.laneKeep to zonal_laneKeep_sw;
+    allocation alloc_zonal_impl_4 allocate zonalLogic.rearZoneFeatures.parkAssist to zonal_park_sw;
+```
+## Domain Feature -> Domain Software
+```SysML::OpenBoardnet::Allocations
+    allocation alloc_domain_impl_1 allocate domainLogic.radarDomain.acc to domain_acc_sw;
+    allocation alloc_domain_impl_2 allocate domainLogic.radarDomain.obstacleDet to domain_obstacle_sw;
+    allocation alloc_domain_impl_3 allocate domainLogic.visionDomain.laneKeep to domain_laneKeep_sw;
+    allocation alloc_domain_impl_4 allocate domainLogic.ultrasonicDomain.parkAssist to domain_park_sw;
+```
+# Software Component -> Controller Allocations (executedBy)
 ## Zonal Software -> Zonal Controllers
 ```SysML::OpenBoardnet::Allocations
-    allocation alloc_exec_1 allocate zonalLogic.frontZoneFeatures to CU::zonalControllerFront;
-    allocation alloc_exec_2 allocate zonalLogic.rearZoneFeatures to CU::zonalControllerRear;
-    allocation alloc_exec_3 allocate zonalLogic.centralFeatures to CU::centralController;
+    allocation alloc_zonal_exec_1 allocate zonal_acc_sw to CU::zonalControllerFront;
+    allocation alloc_zonal_exec_2 allocate zonal_obstacle_sw to CU::zonalControllerFront;
+    allocation alloc_zonal_exec_3 allocate zonal_laneKeep_sw to CU::centralController;
+    allocation alloc_zonal_exec_4 allocate zonal_park_sw to CU::zonalControllerRear;
 ```
 ## Domain Software -> Domain Controllers
 ```SysML::OpenBoardnet::Allocations
-    allocation alloc_domain_exec_1 allocate domainLogic.visionDomain.laneKeep to CU::cameraController;
-    allocation alloc_domain_exec_2 allocate domainLogic.radarDomain.acc to CU::radarAndLidarController;
-    allocation alloc_domain_exec_3 allocate domainLogic.radarDomain.obstacleDet to CU::radarAndLidarController;
-    allocation alloc_domain_exec_4 allocate domainLogic.ultrasonicDomain.parkAssist to CU::ultrasonicController;
+    allocation alloc_domain_exec_1 allocate domain_laneKeep_sw to CU::cameraController;
+    allocation alloc_domain_exec_2 allocate domain_acc_sw to CU::radarAndLidarController;
+    allocation alloc_domain_exec_3 allocate domain_obstacle_sw to CU::radarAndLidarController;
+    allocation alloc_domain_exec_4 allocate domain_park_sw to CU::ultrasonicController;
 ```
 # Hardware -> Location allocations
 ## Sensors -> Locations
