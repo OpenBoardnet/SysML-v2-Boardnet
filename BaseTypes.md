@@ -6,9 +6,6 @@ Defines the fundamental data types, units of measure (SI units), and value types
 It ensures semantic consistency for all attributes like length, mass, or speed throughout the project.
 ```SysML::OpenBoardnet
 package BaseTypes {  
-
-    private import ISQ::*;
-    private import ScalarValues::*;
     
     // An abstract 'Feature' that other features will specialize.
     abstract part def Feature;

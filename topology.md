@@ -40,8 +40,6 @@ To estimate the length of wires, we use the city block distance metric,
 multiplied with a constant factor.
 ```SysML::OpenBoardnet
 package Topology {
-    private import ISQ::*;
-    private import ScalarValues::*;
     private import LocationsAndSpaces::*; 
     private import Network::*; 
 

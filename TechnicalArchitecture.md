@@ -13,8 +13,6 @@ private import Actuators::*;
 private import Hardware::*;
 private import Network::*;           
 private import LocationsAndSpaces::*;
-private import ISQ::*;
-private import ScalarValues::*;
 
 part def BaseArchitectureRealization {
     // Primary Vehicle Locations 
@@ -24,9 +22,9 @@ part def BaseArchitectureRealization {
     part loc_Rear : LocationsAndSpaces::rearAxle;
         
     // Analysis 
-    attribute totalLength: LengthValue = bySpecializations(totalLength) {:>> range= "0..1000" ;:>> unit ="m";} 
-    attribute totalWeight: MassValue = bySpecializations(totalWeight);// {:>> range = "0..1000";:>> unit ="g";}
-    attribute totalCosts:  AmountOfMoneyValue = bySpecializations(totalCosts) {:>> range= "0..20" ;:>> unit ="EUR";} 
+    attribute totalLength: LengthValue = bySpecializations(totalLength) {:>> range = 0..1000 [m];} 
+    attribute totalWeight: MassValue = bySpecializations(totalWeight);// {:>> range = 0..1000 [g];}
+    attribute totalCosts:  AmountOfMoneyValue = bySpecializations(totalCosts) {:>> range = 0..20 [EUR];} 
 }
 ```
 # Zonal Architecture

@@ -38,11 +38,11 @@ package Network {
     private import Topology::*;
     // Base class for all wires
     part def WireType {
-        attribute specificWeight: ScalarQuantityValue {:>> unit default = "g/m"; :>> range default = "1..100";}
-        attribute costsPerMeter: ScalarQuantityValue {:>> unit default = "EUR/m"; :>> range default = "0.0..1.0";}
-        attribute transmissionRate: BitRateValue {:>> unit default = "Mbit/s"; :>> range default = "0.0001 .. 10000.0";}
-        attribute dataPerFrame: StorageCapacityValue {:>> unit default = "B"; :>> range  default = "0..10000";}
-        attribute overheadPerFrame: StorageCapacityValue {:>> unit default = "B"; :>> range default = "0..1000";}
+        attribute specificWeight: ScalarQuantityValue {:>> range default = 1..100 [g/m];}
+        attribute costsPerMeter: ScalarQuantityValue {:>> range default = 0.0..1.0 [EUR/m];}
+        attribute transmissionRate: BitRateValue {:>> range default = 0.0001..10000.0 [Mbit/s];}
+        attribute dataPerFrame: StorageCapacityValue {:>> range default = 0..10000 [B];}
+        attribute overheadPerFrame: StorageCapacityValue {:>> range default = 0..1000 [B];}
         attribute arbitration: String; // deterministic (e.g. DurationValue triggered) or stochastic (e.g. old Ethernet) 
     }
     // We feature the package below with classes
@@ -61,56 +61,56 @@ We use the following source:
 [Vector](https://elearning.vector.com/mod/page/view.php?id=122#section-4)
 ```SysML::OpenBoardnet::Network
     part def Ethernet :> WireType {
-        attribute :>> specificWeight {:>> unit ="g/m"; :>> range default = "3..40";}
-        attribute :>> costsPerMeter {:>> unit = "EUR/m"; :>> range default = "0.02..1.0";} 
-        attribute :>> transmissionRate {:>> unit = "Mbit/s"; :>> range default = "0.1..10000";}
-        attribute :>> dataPerFrame {:>> unit = "B"; :>> range default = "46..1500";}
-        attribute :>> overheadPerFrame {:>> unit = "B"; :>> range default = "30..30";} 
+        attribute :>> specificWeight {:>> range default = 3..40 [g/m];}
+        attribute :>> costsPerMeter {:>> range default = 0.02..1.0 [EUR/m];} 
+        attribute :>> transmissionRate {:>> range default = 0.1..10000 [Mbit/s];}
+        attribute :>> dataPerFrame {:>> range default = 46..1500 [B];}
+        attribute :>> overheadPerFrame {:>> range default = 30..30 [B];} 
     }
 ```
 ```SysML::OpenBoardnet::Network
 part def Eth10BaseT1 :> Ethernet {
     attribute :>> specificWeight = 26.0 [g/m] {:>> unit = "g/m";} 
     attribute :>> costsPerMeter = 0.3 [EUR/m] {:>> unit = "EUR/m";} 
-    attribute :>> transmissionRate {:>> unit = "Mbit/s"; :>> range = "1..10";}
+    attribute :>> transmissionRate {:>> range = 1..10 [Mbit/s];}
 }        
 
 part def Eth100BaseT1 :> Ethernet {
     attribute :>> specificWeight = 26.0 [g/m] {:>> unit = "g/m";}  
-    attribute :>> costsPerMeter {:>> unit = "EUR/m";:>> range = "0.3..1.0";}  
-    attribute :>> transmissionRate {:>> unit = "Mbit/s"; :>> range = "1..100";}
+    attribute :>> costsPerMeter {:>> range = 0.3..1.0 [EUR/m];}  
+    attribute :>> transmissionRate {:>> range = 1..100 [Mbit/s];}
 }
 
 part def Eth1000BaseT1 :> Ethernet {
     attribute :>> specificWeight = 26.0 [g/m] {:>> unit = "g/m";}  
     attribute :>> costsPerMeter = 0.3 [EUR/m] {:>> unit = "EUR/m";} 
-    attribute :>> transmissionRate {:>> unit = "Mbit/s"; :>> range = "1..1000";} 
+    attribute :>> transmissionRate {:>> range = 1..1000 [Mbit/s];} 
 }
 
 part def Eth10GBASET1 :> Ethernet {
     attribute :>> specificWeight = 26.0 [g/m] {:>> unit = "g/m";} 
     attribute :>> costsPerMeter = 0.3 [EUR/m] {:>> unit = "EUR/m";} 
-    attribute :>> transmissionRate {:>> unit = "Mbit/s"; :>> range = "1..10000";} 
+    attribute :>> transmissionRate {:>> range = 1..10000 [Mbit/s];} 
 }
 ```
 ## LVDS
 ```SysML::OpenBoardnet::Network
     part def LVDS :> WireType {
-        attribute :>> specificWeight {:>> unit = "g/m"; :>> range = "20..20";} 
-        attribute :>> transmissionRate {:>> unit = "MB/s"; :>> range = "655.0";}  
-        attribute :>> costsPerMeter {:>> unit = "EUR/m"; :>> range = "0.8";}  
-        attribute :>> dataPerFrame {:>> unit = "B"; :>> range = "1000..1000";} 
-        attribute :>> overheadPerFrame {:>> unit = "B"; :>> range = "30..30";} 
+        attribute :>> specificWeight {:>> range = 20..20 [g/m];} 
+        attribute :>> transmissionRate {:>> range = 655.0 [MB/s];}  
+        attribute :>> costsPerMeter {:>> range = 0.8 [EUR/m];}  
+        attribute :>> dataPerFrame {:>> range = 1000..1000 [B];} 
+        attribute :>> overheadPerFrame {:>> range = 30..30 [B];} 
     }
 ```
 ## FlexRay
 ```SysML::OpenBoardnet::Network
     part def FlexRay :> WireType {
-        attribute :>> specificWeight {:>> unit = "g/m"; :>> range = "10..10";}  
-        attribute :>> transmissionRate {:>> unit = "MB/s"; :>> range = "10.0";}  
-        attribute :>> costsPerMeter {:>> unit = "EUR/m"; :>> range = "0.35";}  
-        attribute :>> dataPerFrame {:>> unit = "B"; :>> range = "1..254";}  
-        attribute :>> overheadPerFrame {:>> unit = "B"; :>> range = "64.0";} 
+        attribute :>> specificWeight {:>> range = 10..10 [g/m];}  
+        attribute :>> transmissionRate {:>> range = 10.0 [MB/s];}  
+        attribute :>> costsPerMeter {:>> range = 0.35 [EUR/m];}  
+        attribute :>> dataPerFrame {:>> range = 1..254 [B];}  
+        attribute :>> overheadPerFrame {:>> range = 64.0 [B];} 
     }
 ```
 ## CAN
@@ -140,19 +140,19 @@ A 500 kbit/s CAN is regarded as "high SpeedValue."
 [[2]](https://www.eecs.umich.edu/courses/eecs461/doc/CAN_notes.pdf)
 ```SysML::OpenBoardnet::Network
 part def CAN :> WireType {
-        attribute :>> specificWeight {:>> unit default =" g/m"; :>> range default = "3..40";}
-        attribute :>> transmissionRate {:>> unit default = "kB/s"; :>> range default = "40.0..120";}
-        attribute :>> costsPerMeter {:>> unit default = "EUR/m"; :>> range default = "0.6..0.9";} 
-        attribute :>> dataPerFrame {:>> unit default = "B"; :>> range default = "1..64";}
-        attribute :>> overheadPerFrame {:>> unit default = "B"; :>> range default = "61..87";}
+        attribute :>> specificWeight {:>> range default = 3..40 [g/m];}
+        attribute :>> transmissionRate {:>> range default = 40.0..120 [kB/s];}
+        attribute :>> costsPerMeter {:>> range default = 0.6..0.9 [EUR/m];} 
+        attribute :>> dataPerFrame {:>> range default = 1..64 [B];}
+        attribute :>> overheadPerFrame {:>> range default = 61..87 [B];}
     } 
 
 part def CANFD :> CAN {
-        attribute :>> specificWeight {:>> unit = "g/m"; :>> range="25..25";}
-        attribute :>> transmissionRate {:>> unit = "kB/s"; :>> range="80.0";}
-        attribute :>> costsPerMeter {:>> unit = "EUR/m"; :>> range="0.7";}
-        attribute :>> dataPerFrame {:>> unit = "B"; :>> range="1..64";}
-        attribute :>> overheadPerFrame {:>> unit = "B"; :>> range="61..87";}
+        attribute :>> specificWeight {:>> range = 25..25 [g/m];}
+        attribute :>> transmissionRate {:>> range = 80.0 [kB/s];}
+        attribute :>> costsPerMeter {:>> range = 0.7 [EUR/m];}
+        attribute :>> dataPerFrame {:>> range = 1..64 [B];}
+        attribute :>> overheadPerFrame {:>> range = 61..87 [B];}
     } 
 ```
 ### CAN XL
@@ -165,21 +165,21 @@ Classical CAN and CAN FD communication can also be carried out by CAN XL protoco
 ![CANXL](Files/CANXL.jpeg){width=400 height=300}
 ```SysML::OpenBoardnet::Network
     part def CANXL :> CAN {
-        attribute :>> specificWeight = 10.0 [g/m] {:>> unit = "g/m"; :>> range = "3..40";} 
-        attribute :>> transmissionRate {:>> unit = "kB/s"; :>> range = "60.0";} 
-        attribute :>> costsPerMeter {:>> unit = "EUR/m"; :>> range = "0.8";} 
-        attribute :>> dataPerFrame {:>> unit = "B"; :>> range = "1..64";}
-        attribute :>> overheadPerFrame {:>> unit = "B"; :>> range = "61..87";}
+        attribute :>> specificWeight = 10.0 [g/m] {:>> range = 3..40 [g/m];} 
+        attribute :>> transmissionRate {:>> range = 60.0 [kB/s];} 
+        attribute :>> costsPerMeter {:>> range = 0.8 [EUR/m];} 
+        attribute :>> dataPerFrame {:>> range = 1..64 [B];}
+        attribute :>> overheadPerFrame {:>> range = 61..87 [B];}
     } 
 ```
 ## LIN
 ```SysML::OpenBoardnet::Network
     part def LIN :> WireType {
-        attribute :>> specificWeight {:>> unit = "g/m"; :>> range = "5..5";}
-        attribute :>> transmissionRate {:>> unit = "MB/s"; :>> range = "0.02";}
-        attribute :>> costsPerMeter {:>> unit = "EUR/m"; :>> range = "0.1";}
-        attribute :>> dataPerFrame {:>> unit = "B"; :>> range = "1..80";}
-        attribute :>> overheadPerFrame {:>> unit = "B"; :>> range = "44.0";}
+        attribute :>> specificWeight {:>> range = 5..5 [g/m];}
+        attribute :>> transmissionRate {:>> range = 0.02 [MB/s];}
+        attribute :>> costsPerMeter {:>> range = 0.1 [EUR/m];}
+        attribute :>> dataPerFrame {:>> range = 1..80 [B];}
+        attribute :>> overheadPerFrame {:>> range = 44.0 [B];}
     }
 ```
 # Wire Definition

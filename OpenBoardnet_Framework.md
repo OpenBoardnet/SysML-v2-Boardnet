@@ -84,11 +84,9 @@ It defines the connectivity graph of the vehicle architecture and calculates rou
 # SysML Package Definition
 
 The OpenBoardnet library is in the package `OpenBoardnet`.
-```SysML
-package OpenBoardnet {
-  private import ScalarValues::*;  // OMG Std. Datatypes
-  private import ISQ::*;            // SI Units 
-  private import Ranges::*;
-  private import Quantities::*;
-}
+```SysML::OpenBoardnet
+  public import ScalarValues::*;  // OMG Std. Datatypes
+  public import ISQ::*;            // SI Units 
+  public import Ranges::*;
+  public import Quantities::*;
 ```

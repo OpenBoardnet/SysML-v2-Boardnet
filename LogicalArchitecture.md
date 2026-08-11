@@ -16,8 +16,6 @@ Both architectures use the same sensors but structure the logical features and s
 private import Features::*;
 private import Functions::*;
 private import Requirements::*;
-private import ISQ::*;
-private import ScalarValues::*;
 
 abstract part def VehicleZone {
     attribute calculatedWeight: MassValue;

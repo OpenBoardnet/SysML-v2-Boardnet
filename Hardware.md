@@ -7,8 +7,6 @@ It sums up the base types for Sensors, Network modules, Compute Units (CUs), and
 ```SysML::OpenBoardnet
 package Hardware {
     
-    private import ISQ::*;
-    
     part def Hardware_Base {
         attribute lambdaSPF: FrequencyValue;  // single-point failure rate
         attribute lambdaRF:  FrequencyValue;  // residual-fault failure rate

@@ -24,10 +24,6 @@ Controllers in this model are generic processors that are characterized by:
 *(Note: The physical position is determined by the `Allocation` to a `Location` in the Technical Architecture, not defined inside the component itself.)*
 ```SysML::OpenBoardnet::CU
 private import Hardware::*;
-private import ScalarValues::*;
-private import ISQ::*;
-private import Quantities::*;
-private import Ranges::*;
 private import Safety::*;
 private import NeuralNetworkModel::*;
 private import BaseTypes::*;
@@ -39,8 +35,8 @@ part def ControlUnit :> ControlUnit_Base{
     attribute exposure: DimensionOneValue = 4.0;
     attribute controllability: DimensionOneValue = 3.0;
     attribute asilLevel: DimensionOneValue = Safety::calcASIL(severity, exposure, controllability);
-    attribute fclk: FrequencyValue {:>> unit= "MHz"; :>> range= "0.1 .. 10000";} 
-    attribute opsPerCyle:  IntegerInRange {:>> range default= "1..10000";}
+    attribute fclk: FrequencyValue {:>> range = 0.1..10000 [MHz];} 
+    attribute opsPerCyle:  IntegerInRange {:>> range default = 1..10000;}
     attribute FLOPS_Hardware: FrequencyValue =  fclk * ToReal(opsPerCyle)  {:>> unit= "GFLOPS";} 
 }
 
@@ -69,7 +65,7 @@ part def ADASController :> ControlUnit { //ARM Cortex-m7
 }
 
 part def test :> ControlUnit { //ARM Cortex-m7
-    attribute :>> fclk {:>> unit ="GHz"; :>>range="0.1..10";}
+    attribute :>> fclk {:>> range = 0.1..10 [GHz];}
     :>> opsPerCyle = 2; //4 cores with 32 Ops per cylce
     part runningModel : Yolov5n;
     attribute T : DurationValue = runningModel::FLOPsTotal / FLOPS_Hardware {:>> unit = "ms";}

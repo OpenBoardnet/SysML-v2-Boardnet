@@ -9,7 +9,6 @@ Translate requirements into specific system capabilities (features) and operatio
 # Features
 ```SysML::OpenBoardnet
 package Features {
-    private import ScalarValues::*;
     private import BaseTypes::*;
 
     part def CruiseControlFeature :> Feature {
@@ -40,14 +39,13 @@ package Features {
 # Functions
 ```SysML::OpenBoardnet
 package Functions {
-    private import ISQ::*;
     private import BaseTypes::*;
 
     part def SpeedAcquisition :> Function {
-        out attribute vehicleSpeed: SpeedValue {:>> unit = "km/h"; :>> range = "-20..200";}
+        out attribute vehicleSpeed: SpeedValue {:>> range = -20..200 [km/h];}
     }
     part def SpeedControl :> Function {
-        in attribute speedInput: SpeedValue {:>> unit = "km/h"; :>> range = "-20..250";}
+        in attribute speedInput: SpeedValue {:>> range = -20..250 [km/h];}
     }
 }
 ```

@@ -14,13 +14,11 @@ ASIL level (B, C, D).
 Both metrics depend on their respective failure rates, as well as the total failure rate $\lambda_{tot}$.
 ```SysML::OpenBoardnet
 package Reliability {
-    private import ISQ::*;
-    private import ScalarValues::*;
 
     abstract part def ReliableItem {
         attribute mtbf: DurationValue {:>> unit = "h";}
         attribute mttr: DurationValue {:>> unit = "h";}
-        attribute availability: DimensionOneValue {:>> unit = "%"; :>> range = "0.0..100.0";}
+        attribute availability: DimensionOneValue {:>> range = 0.0..100.0 [%];}
 
         attribute lambdaSPF:     FrequencyValue;           // single-point failure rate
         attribute lambdaRF:      FrequencyValue;           // residual-fault failure rate
@@ -242,8 +240,8 @@ calc def calcProbFailure {
     requirement def ReliabilityRequirement {
         subject itm: ReliableItem;
         
-        attribute minRequiredMTBF: DurationValue {:>> unit = "h"; :>> range = "1..876000";}
-        attribute maxAllowedMTTR: DurationValue {:>> unit = "h"; :>> range = "0..24";}
+        attribute minRequiredMTBF: DurationValue {:>> range = 1..876000 [h];}
+        attribute maxAllowedMTTR: DurationValue {:>> range = 0..24 [h];}
         
         constraint {
             itm::mtbf >= minRequiredMTBF

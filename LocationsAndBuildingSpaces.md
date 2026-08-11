@@ -95,25 +95,20 @@ including modal analysis, finite element analysis, and real-world evaluations, t
 The roof of a vehicle provides overhead protection and is an area where additional features can be installed. For example, it may have mounting points for roof racks, antennas, or sunroofs.
 ## Wheel Wells
 The wheel wells are the openings in the body of the vehicle that accommodate the wheels. They provide clearance for wheel movement and are designed to prevent debris from entering the passenger compartment or other critical areas.
-```SysML::OpenBoardnet::LocationsAndSpaces
-private import ISQ::*;
-private import ScalarValues::*;
-private import Quantities::*;
-```
 # InstallationSpace and Location Definition
 ```SysML::OpenBoardnet::LocationsAndSpaces
 part def InstallationSpace {
-    attribute positionOfSpace: CartesianPosition3dVector {:>> range = "-1.5..6.0, -1.25..1.25, -0.5..4.0";} 
+    attribute positionOfSpace: CartesianPosition3dVector {:>> range = (-1.5..6.0, -1.25..1.25, -0.5..4.0) [m];} 
     // Environmental conditions
-    attribute temperatureRange: ThermodynamicTemperatureValue {:>> unit ="°C"; :>> range="-40 .. 150";} 
-    attribute vibrations: SpeedValue {:>> unit ="mm/s"; :>> range="0 .. 100";}
-    attribute humidity: MassDensityValue {:>> unit ="kg/m^3"; :>> range="0..100000";} 
-    attribute EMI: ElectricPotentialDifferenceValue {:>> unit ="mV"; :>> range="0..100";}
+    attribute temperatureRange: ThermodynamicTemperatureValue {:>> range = -40..150 [°C];} 
+    attribute vibrations: SpeedValue {:>> range = 0..100 [mm/s];}
+    attribute humidity: MassDensityValue {:>> range = 0..100000 [kg/m^3];} 
+    attribute EMI: ElectricPotentialDifferenceValue {:>> range = 0..100 [mV];}
 }
 
 part def Location {
     part space : InstallationSpace;
-    attribute relativePosition : CartesianPosition3dVector {:>> range= "0.0..4.0, -1.25..1.25, -0.5..4.0";}
+    attribute relativePosition : CartesianPosition3dVector {:>> range = (0.0..4.0, -1.25..1.25, -0.5..4.0) [m];}
     attribute position: CartesianPosition3dVector = space::positionOfSpace + relativePosition;
 }
 ```
@@ -121,13 +116,13 @@ part def Location {
 ```SysML::OpenBoardnet::LocationsAndSpaces
 // The three zones
 part def FrontSpace :> InstallationSpace{
-    attribute positionOfSpace: CartesianPosition3dVector = (-0.9, 0.0, 0.2) [m];
+    attribute positionOfSpace: CartesianPosition3dVector {:>> range = (-0.9, 0.0, 0.2) [m];}
 }
 part def CabinSpace :> InstallationSpace{
-    attribute positionOfSpace: CartesianPosition3dVector  = (0.0, 0.0, 0.2) [m];
+    attribute positionOfSpace: CartesianPosition3dVector {:>> range = (0.0, 0.0, 0.2) [m];}
 }
 part def RearSpace :> InstallationSpace{
-    attribute positionOfSpace: CartesianPosition3dVector  = (2.0, 0.0, 0.5) [m];
+    attribute positionOfSpace: CartesianPosition3dVector {:>> range = (2.0, 0.0, 0.5) [m];}
 }
 ```
 # Locations of Components

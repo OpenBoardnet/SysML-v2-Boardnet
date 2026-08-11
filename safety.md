@@ -58,21 +58,18 @@ Assumed based on ISO 26262 decription: all other.
 | **Probability of Failure**            | [1..5) %     | [0.1..1) %    | [0.01..0.1) %  | [0..0.01) %  |
 ## Basis-Definition
 ```SysML::OpenBoardnet::Safety
-private import ISQ::*;
-private import ScalarValues::*; 
-
 abstract part def SafetyCriticalItem {
-    attribute assignedASIL: DimensionOneValue {:>> range = "0..4";}
-    attribute achievedFIT: DimensionOneValue {:>> range = "0..1000";}
+    attribute assignedASIL: DimensionOneValue {:>> range = 0..4;}
+    attribute achievedFIT: DimensionOneValue {:>> range = 0..1000;}
     attribute safeStateDescription: String;
 }
 ```
 ## ASIL Calculation (S, E, C)
 ```SysML::OpenBoardnet::Safety
 calc def calcASIL {
-    in attribute severity: DimensionOneValue {:>> range="0..3";}
-    in attribute exposure: DimensionOneValue {:>> range="0..4";}
-    in attribute controllability: DimensionOneValue {:>> range="0..3";}
+    in attribute severity: DimensionOneValue {:>> range = 0..3;}
+    in attribute exposure: DimensionOneValue {:>> range = 0..4;}
+    in attribute controllability: DimensionOneValue {:>> range = 0..3;}
     
     attribute sum: DimensionOneValue = severity + exposure + controllability;
     // CORRECTION: Comparison with 0.0 
@@ -85,14 +82,14 @@ calc def calcASIL {
 ## ASIL Dekomposition
 ```SysML::OpenBoardnet::Safety
 calc def calculateASILDecomposition {
-    in attribute part1: DimensionOneValue {:>> range="0..4";}
-    in attribute part2: DimensionOneValue {:>> range="0..4";}
+    in attribute part1: DimensionOneValue {:>> range = 0..4;}
+    in attribute part2: DimensionOneValue {:>> range = 0..4;}
     in attribute isRedundant: Boolean;
     
     attribute redundantLevel: DimensionOneValue = min(part1 + part2, 4.0 );
     attribute notredundantLevel: DimensionOneValue = min(part1, part2);
     
-    return result: DimensionOneValue = if isRedundant ? redundantLevel else notredundantLevel {:>> range="0..4";} 
+    return result: DimensionOneValue = if isRedundant ? redundantLevel else notredundantLevel {:>> range = 0..4;} 
 }
 ```
 ## ASIL aus Metriken (ISO 26262)
@@ -116,7 +113,7 @@ calc def ASIL_from_MTBF {
     in attribute MTBF: ISQ::DurationValue   { :>> unit = "h";} 
     return level: ScalarValues::Integer = stepInterpolation(MTBF, 0.0 [h], 0, 1e3 [h], 1, 1e4 [h], 2, 1e5 [h], 3, 1e6 [h], 4);
 }
-         
+          
 calc def ASIL_from_MTTR {
     in attribute MTTR: ISQ::DurationValue   { :>> unit = "h";} 
     return level: ScalarValues::Integer = stepInterpolation(MTTR, 0.0 [h], 4, 0.7 [h], 3, 2.0 [h], 2, 12.0 [h], 1, 72.0 [h], 0);
@@ -126,12 +123,12 @@ calc def ASIL_from_MTTF {
     in attribute MTTF: ISQ::DurationValue  { :>> unit = "h";} 
     return level: ScalarValues::Integer =  stepInterpolation(MTTF, 0.0 [h], 0, 1e3 [h], 1, 1e4 [h], 2, 1e5 [h], 3, 1e6 [h], 4);
 }
-     
+      
 calc def ASIL_from_Avail {
     in attribute Avail: ISQ::DimensionOneValue  { :>> unit = "%";} 
     return level: ScalarValues::Integer =  stepInterpolation(Avail, 0.0, 1, 0.99, 2, 0.995, 3, 0.999, 4);
 } 
-     
+      
 calc def ASIL_from_Reliab {
     in attribute Reliab: ISQ::DimensionOneValue { :>> unit = "%";} 
     return level: ScalarValues::Integer = stepInterpolation(Reliab, 0.0, 1, 0.99, 2, 0.995, 3, 0.999, 4);
@@ -147,8 +144,8 @@ calc def ASIL_from_ProbFail {
 requirement def SafetyGoal {
     subject s_item: SafetyCriticalItem; 
     
-    attribute requiredASIL: DimensionOneValue {:>> range = "0..4";}
-    attribute maxFIT: DimensionOneValue {:>> range = "0..1000";}
+    attribute requiredASIL: DimensionOneValue {:>> range = 0..4;}
+    attribute maxFIT: DimensionOneValue {:>> range = 0..1000;}
     
     constraint {s_item::assignedASIL == requiredASIL}
     constraint {s_item::achievedFIT <= maxFIT}

@@ -9,13 +9,10 @@ Capture physical quantities (e.g. speed, temperature) as input data for control 
 which are linked to software components like SpeedMeasureSW. 
 ```SysML::OpenBoardnet::Sensors
 private import Hardware::*;      
-private import ISQ::*;           
-private import Quantities::*;    
-private import ScalarValues::*;
 
 part def Sensor :> Sensor_Base {
     attribute measuredQuantityType: String;
-    attribute dataLoad: StorageCapacityValue {:>> unit ="kB"; :>> range="0..100";} 
+    attribute dataLoad: StorageCapacityValue {:>> range = 0..100 [kB];} 
 }
 
 part def Camera :> Sensor;
@@ -50,6 +47,6 @@ part roofCamera: Camera {
 ## Additional Sensors
 ```SysML::OpenBoardnet::Sensors
 part wheelSpeedSensor: Sensor {
-    out attribute wheelSpeed: SpeedValue {:>> unit = "km/h"; :>> range = "-20..200";}
+    out attribute wheelSpeed: SpeedValue {:>> range = -20..200 [km/h];}
 }
 ```
