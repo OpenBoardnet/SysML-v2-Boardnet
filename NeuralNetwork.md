@@ -83,7 +83,12 @@ part def SiLULayer :> NeuralNetworkLayer {
 ```
 # YOLOv5n Model
 ```SysML::OpenBoardnet::NeuralNetworkModel
-part def Yolov5n {
+part def NeuralNetwork{
+    attribute FLOPsTotal: DimensionOneValue = sumOverParts(FLOPs) {:>> unit = "GFLOPs";}
+    attribute MemoryTotal : StorageCapacityValue = sumOverParts(Memory) {:>> unit = "MB";}
+}
+
+part def Yolov5n:> NeuralNetwork {
     part model_0_conv : ConvLayer {
         :>> kernelSize = 6;
         :>> numFilters = 16;
@@ -1275,7 +1280,5 @@ part def Yolov5n {
         :>> padding = 0;
         part precision: BaseTypes::PrecisionTypes::Float32;
     }
-    attribute FLOPsTotal: DimensionOneValue = sumOverParts(FLOPs) {:>> unit = "GFLOPs";}
-    attribute MemoryTotal : StorageCapacityValue = sumOverParts(Memory) {:>> unit = "MB";}
 }
 ```

@@ -24,9 +24,9 @@ Controllers in this model are generic processors that are characterized by:
 *(Note: The physical position is determined by the `Allocation` to a `Location` in the Technical Architecture, not defined inside the component itself.)*
 ```SysML::OpenBoardnet::CU
 private import Hardware::*;
-private import Safety::*;
 private import NeuralNetworkModel::*;
 private import BaseTypes::*;
+private import Safety::*;
 ```
 # Control units
 ```SysML::OpenBoardnet::CU
@@ -35,11 +35,13 @@ part def ControlUnit :> ControlUnit_Base{
     attribute exposure: DimensionOneValue = 4.0;
     attribute controllability: DimensionOneValue = 3.0;
     attribute asilLevel: DimensionOneValue = Safety::calcASIL(severity, exposure, controllability);
-    attribute fclk: FrequencyValue {:>> range = 0.1..10000 [MHz];} 
-    attribute opsPerCyle:  IntegerInRange {:>> range default = 1..10000;}
+    attribute fclk: FrequencyValue {:>> range = 0.1..100000 [MHz];} 
+    attribute opsPerCyle:  IntegerInRange {:>> range default = 1..1000;}
     attribute FLOPS_Hardware: FrequencyValue =  fclk * ToReal(opsPerCyle)  {:>> unit= "GFLOPS";} 
+    attribute Memory_Hardware : StorageCapacityValue {:>> range = 1.0 .. 100000.0 [MB];}
 }
-
+```
+```SysML::OpenBoardnet::CU
 part zonalControllerFront: ControlUnit;
 part centralController: ControlUnit;
 part gateway: ControlUnit;
@@ -47,50 +49,32 @@ part cameraController: ControlUnit;
 part ultrasonicController: ControlUnit;
 part radarAndLidarController: ControlUnit;
 part zonalControllerRear: ControlUnit;
-
-
-part def ADASController :> ControlUnit { //ARM Cortex-m7
-    attribute :>> fclk = 480.0 [MHz];
-    :>> opsPerCyle = 2;
+```
+## ADAS Controller running the Yolov5n model
+```SysML::OpenBoardnet::CU
+part def ADASController :> ControlUnit { 
     part runningModel : Yolov5n;
-    attribute T : DurationValue = runningModel::FLOPsTotal / FLOPS_Hardware;
-
-    // ADAS Hard-Deadline (ISO 26262 ASIL-B konform)
-    attribute R : DurationValue = 33.0[ms]; // 30 fps, R = maxLatency
-    //assert constraint { R <= T }
-
-    // Speicher-Constraint (2 MB SRAM-Limit)
-    attribute MemoryHardware : StorageCapacityValue = 2.0[MB];
-    //assert constraint { runningModel::MemoryTotal <= MemoryHardware }
+    attribute FLOPs_Total: DimensionOneValue = runningModel::FLOPsTotal {:>> unit = "GFLOPs";}
+    attribute Memory_Total: StorageCapacityValue = runningModel::MemoryTotal {:>> unit = "MB";}
+    attribute T : DurationValue = FLOPs_Total / FLOPS_Hardware {:>> unit = "ms";}
+    attribute R : DurationValue = 33.0[ms] {:>> unit = "ms";} // 30 fps, R = maxLatency   
+    assert constraint TimeConstraint { R >= T }
+    assert constraint MemoryConstraint { Memory_Hardware >= Memory_Total }
 }
-
-part def test :> ControlUnit { //ARM Cortex-m7
-    attribute :>> fclk {:>> range = 0.1..10 [GHz];}
+```
+## ARM Cortex-m7
+```SysML::OpenBoardnet::CU
+part def ARMCortex :> ADASController { //ARM Cortex-m7
+    :>> fclk {:>> range = 240.0 [MHz];}
     :>> opsPerCyle = 2; //4 cores with 32 Ops per cylce
-    part runningModel : Yolov5n;
-    attribute T : DurationValue = runningModel::FLOPsTotal / FLOPS_Hardware {:>> unit = "ms";}
-
-    // ADAS Hard-Deadline (ISO 26262 ASIL-B konform)
-    attribute R : DurationValue = 33.0[ms]; // 30 fps, R = maxLatency
-    //assert constraint { R >= T }
-
-    // Speicher-Constraint (z.B. 2 MB SRAM-Limit)
-    attribute MemoryHardware : StorageCapacityValue = 2.0[MB];
-    //assert constraint { runningModel::MemoryTotal <= MemoryHardware }
+    :>> Memory_Hardware = 2.0 [MB];
 }
-
-part def macbookM4 :> ControlUnit { //ARM Cortex-m7
-    attribute :>> fclk = 4.4 [GHz];
+```
+## MacBook M4
+```SysML::OpenBoardnet::CU
+part def macbookM4 :> ADASController { 
+    :>> fclk = 4.4 [GHz];
     :>> opsPerCyle = 4*32; //4 cores with 32 Ops per cylce
-    part runningModel : Yolov5n;
-    attribute T : DurationValue = runningModel::FLOPsTotal / FLOPS_Hardware {:>> unit = "ms";}
-
-    // ADAS Hard-Deadline (ISO 26262 ASIL-B konform)
-    attribute R : DurationValue = 33.0[ms]; // 30 fps, R = maxLatency
-    //assert constraint { R <= T }
-
-    // Speicher-Constraint (z.B. 2 MB SRAM-Limit)
-    attribute MemoryHardware : StorageCapacityValue = 2.0[MB];
-    //assert constraint { runningModel::MemoryTotal <= MemoryHardware }
+    :>> Memory_Hardware = 16000.0[MB];
 }
 ```
