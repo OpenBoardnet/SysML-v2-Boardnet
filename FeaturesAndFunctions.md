@@ -1,6 +1,6 @@
 ---
 title: Features and Functions
-name:  FeaturesFunctions
+name:  FeaturesAndFunctions
 ---
 # Contents
 [toc]

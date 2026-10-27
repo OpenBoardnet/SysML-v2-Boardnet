@@ -31,13 +31,16 @@ private import Safety::*;
 # Control units
 ```SysML::OpenBoardnet::CU
 part def ControlUnit :> ControlUnit_Base{
+    // ASIL defaults (ISO 26262 S/E/C classes) are placeholders: every ControlUnit gets
+    // S3/E4/C3 (-> ASIL D) unless a concrete unit or usage model overrides them.
     attribute severity: DimensionOneValue = 3.0;
     attribute exposure: DimensionOneValue = 4.0;
     attribute controllability: DimensionOneValue = 3.0;
     attribute asilLevel: DimensionOneValue = Safety::calcASIL(severity, exposure, controllability);
     attribute fclk: FrequencyValue {:>> range = 0.1..100000 [MHz];} 
-    attribute opsPerCyle:  IntegerInRange {:>> range default = 1..1000;}
-    attribute FLOPS_Hardware: FrequencyValue =  fclk * ToReal(opsPerCyle)  {:>> unit= "GFLOPS";} 
+    attribute opsPerCycle:  IntegerInRange {:>> range default = 1..1000;}
+    // FLOPS is a rate (operations per second), so FrequencyValue (dimension 1/T) is the fitting domain.
+    attribute FLOPS_Hardware: FrequencyValue =  fclk * ToReal(opsPerCycle)  {:>> unit= "GFLOPS";} 
     attribute Memory_Hardware : StorageCapacityValue {:>> range = 1.0 .. 100000.0 [MB];}
 }
 ```
@@ -57,7 +60,8 @@ part def ADASController :> ControlUnit {
     attribute FLOPs_Total: DimensionOneValue = runningModel::FLOPsTotal {:>> unit = "GFLOPs";}
     attribute Memory_Total: StorageCapacityValue = runningModel::MemoryTotal {:>> unit = "MB";}
     attribute T : DurationValue = FLOPs_Total / FLOPS_Hardware {:>> unit = "ms";}
-    attribute R : DurationValue = 33.0[ms] {:>> unit = "ms";} // 30 fps, R = maxLatency   
+    attribute frameRate: FrequencyValue = 30.0 [Hz]; // latency constraint: one inference per camera frame
+    attribute R : DurationValue = 1.0 / frameRate {:>> unit = "ms";} // R = maxLatency = 1/frameRate (~33 ms at 30 fps)
     assert constraint TimeConstraint { R >= T }
     assert constraint MemoryConstraint { Memory_Hardware >= Memory_Total }
 }
@@ -66,7 +70,7 @@ part def ADASController :> ControlUnit {
 ```SysML::OpenBoardnet::CU
 part def ARMCortex :> ADASController { //ARM Cortex-m7
     :>> fclk {:>> range = 240.0 [MHz];}
-    :>> opsPerCyle = 2; //4 cores with 32 Ops per cylce
+    :>> opsPerCycle = 2; //single Cortex-M7 core, 2 ops per cycle
     :>> Memory_Hardware = 2.0 [MB];
 }
 ```
@@ -74,7 +78,7 @@ part def ARMCortex :> ADASController { //ARM Cortex-m7
 ```SysML::OpenBoardnet::CU
 part def macbookM4 :> ADASController { 
     :>> fclk = 4.4 [GHz];
-    :>> opsPerCyle = 4*32; //4 cores with 32 Ops per cylce
+    :>> opsPerCycle = 4*32; //4 cores with 32 Ops per cycle
     :>> Memory_Hardware = 16000.0[MB];
 }
 ```

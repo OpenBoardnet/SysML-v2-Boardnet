@@ -1,6 +1,6 @@
 ---
 title: Requirements
-name:  requirements
+name:  Requirements
 ---
 Define mandatory system requirements as the starting point of the development process. They specify functional and non-functional conditions that must be fulfilled by features and functions.
 ```SysML::OpenBoardnet

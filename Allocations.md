@@ -1,6 +1,6 @@
 ---
 title: Allocations
-name:  allocations
+name:  Allocations
 ---
 # Contents
 [toc]

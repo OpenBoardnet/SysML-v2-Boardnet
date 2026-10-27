@@ -1,6 +1,6 @@
 ---
 title: Hardware
-name:  hardware
+name:  Hardware
 ---
 Provides the abstract classification and definitions for physical system components. 
 It sums up the base types for Sensors, Network modules, Compute Units (CUs), and Actuators to establish a common taxonomy for the technical architecture.

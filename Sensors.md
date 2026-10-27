@@ -1,6 +1,6 @@
 ---
 title: Sensors
-name: sensors
+name: Sensors
 ---
 # Contents
 [toc]

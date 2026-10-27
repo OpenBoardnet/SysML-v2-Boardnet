@@ -1,6 +1,6 @@
 ---
 id: 106086d5-234f-4b26-9ef9-9917e8593062
-title:
+title: OpenBoardnet Framework
 name: OpenBoardnet Project
 maintainer: 
 version: 
@@ -47,7 +47,7 @@ The following sections give an overview of OpenBoardnet packages that each model
 ## Requirements
 [Requirements](Requirements.md) define mandatory system requirements as the starting point of the development process. They specify functional and non-functional conditions that must be fulfilled by features and functions.
 ## Features and Functions
-[FeaturesFunctions](FeaturesFunctions.md) translate requirements into specific system capabilities (features) and operationalize these through executable functional building blocks. They form the logical architecture layer between requirements and technical implementation.
+[FeaturesAndFunctions](FeaturesAndFunctions.md) translate requirements into specific system capabilities (features) and operationalize these through executable functional building blocks. They form the logical architecture layer between requirements and technical implementation.
 
 The package consists of a comprehensive set of possible functions and requirements that can be mapped to compute units. Each feature is roughly characterized by abstract parameters like:
 - Processing load (IPC)
@@ -56,12 +56,12 @@ The package consists of a comprehensive set of possible functions and requiremen
 ## Sensors
 [Sensors](Sensors.md) capture physical quantities (e.g. speed, temperature) as input data for control systems. Examples include radar sensors or cameras, which are linked to software components like SpeedMeasureSW. The package provides a set of data sources across the vehicle and beyond.
 ## Network
-[Network](Network.md) models physical connection components like Ethernet cables with attribute-based properties (data rate, length). Enables latency calculations using MAC protocol models. 
+[Network](network.md) models physical connection components like Ethernet cables with attribute-based properties (data rate, length). Enables latency calculations using MAC protocol models. 
 The package provides a set of buses resp. wires that connect sensors and controllers resp. controllers and controllers.
 ## Software
 [Software](Software.md) implements logical functions on compute units. Through allocation relationships (*executedBy*), it is assigned to specific hardware components (e.g., AbsSoftware on CentralECU).
 ## Compute Unit (CU) / Controllers
-[CU](CU.md) (formerly "controllers") models the abstract implementations of features by a processor or compute unit. These include domain-specific controllers, zonal controllers and central high-performance computers.
+[CU](ComputeUnit.md) (formerly "controllers") models the abstract implementations of features by a processor or compute unit. These include domain-specific controllers, zonal controllers and central high-performance computers.
 
 In a concrete usage, this is modeled by a mapping of all features to (different) compute units. Each compute unit implements a number of features for which it needs appropriate performance. Performance is roughly characterized by abstract parameters like:
 - Clock FrequencyValue (cycles per second)
@@ -71,16 +71,16 @@ In a concrete usage, this is modeled by a mapping of all features to (different)
 ## Actuators
 [Actuators](Actuators.md) convert control commands into physical actions (e.g., braking, steering). They operate in conjunction with assigned ECUs and implemented software components.
 ## Locations and Building Spaces
-[LocationsAndSpaces](LocationsAndSpaces.md) define 3D coordinates for hardware components and divide the vehicle into functional areas (engine compartment, trunk). They allow for environment-related load analyses and thermal profile calculations.
+[LocationsAndBuildingSpaces](LocationsAndBuildingSpaces.md) define 3D coordinates for hardware components and divide the vehicle into functional areas (engine compartment, trunk). They allow for environment-related load analyses and thermal profile calculations.
 ## Topology
-[Topology](Topology.md) introduces:
+[Topology](topology.md) introduces:
 - A 3-dimensional model of the vehicle in which the components are located and connected.
 - Models of the installation spaces in which wires and other components are used; they define the environmental loads.
 
 It defines the connectivity graph of the vehicle architecture and calculates routing metrics based on coordinate distances.
 ## Safety & Reliability
-- [Safety](Safety.md): Introduces connectors from components to safety and safety classification of features (ASIL). Defines core concepts for functional safety (ISO 26262).
-- [Reliability](Reliability.md): Introduces reliability metrics. Establishes the model for system reliability (MTBF, MTTR, Failure Rates).
+- [Safety](safety.md): Introduces connectors from components to safety and safety classification of features (ASIL). Defines core concepts for functional safety (ISO 26262).
+- [Reliability](reliability.md): Introduces reliability metrics. Establishes the model for system reliability (MTBF, MTTR, Failure Rates).
 # SysML Package Definition
 
 The OpenBoardnet library is in the package `OpenBoardnet`.
